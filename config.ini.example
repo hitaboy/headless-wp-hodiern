@@ -1,4 +1,0 @@
-# The front-end that will consume this backend WP endpoint (no trailing slash)
-front_end = "https://mydomain.com"
-# Should we enforce a CORS policy for extra security?
-enforce_cors = false
