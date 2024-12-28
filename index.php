@@ -1,9 +1,24 @@
+<div class="main">
 <?php
-// Redirect individual post and pages to the REST API endpoint
-if (is_single()) {
-    header('Location: /wp-json/wp/v2/posts/'.get_post()->ID);
-} elseif (is_page()) {
-    header('Location: /wp-json/wp/v2/pages/'.get_queried_object()->ID);
-} else {
-    header('Location: /wp-json/');
+echo "<h1>Headless WordPress Hodiern</h1>";
+echo "<a href='https://github.com/hitaboy/headless-wp-hodiern'>Github</a>";
+?>
+</div>
+
+<style>
+    body {
+        background: #000;
+        color: #fff;
+        font-family: Arial, sans-serif;
+    }
+    a {
+        color: #fc0;
+    }
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
 }
+</style>

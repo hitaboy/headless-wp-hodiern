@@ -7,10 +7,8 @@
  * @return str The headless WordPress preview link.
  */
 function set_headless_preview_link($link) {
-
-  global $headless_wp_config_options;
-
-  return $headless_wp_config_options['front_end'].'/'.get_post_field('post_name', get_the_ID()).'/';
+  $frontend_url = get_field('frontend_url', 'option');
+  return $frontend_url.'/'.get_post_field('post_name', get_the_ID()).'/';
 }
 
 add_filter('preview_post_link', 'set_headless_preview_link');
