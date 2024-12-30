@@ -188,3 +188,46 @@ function add_that_remove_meta_box_action() {
 function remove_that_damn_meta_box() {
     remove_meta_box('submitdiv', 'acf_options_page', 'side');
 }
+
+// MENUS REGISTERING
+function register_my_menus() {
+    register_nav_menus(
+        array(
+            'header-menu' => __( 'Header Menu' ),
+            'footer-menu' => __( 'Footer Menu' )
+        )
+    );
+}
+add_action( 'init', 'register_my_menus' );
+
+
+// MENUS API ENDPOINTS
+function register_menu_endpoint() {
+    register_rest_route('custom/v1', '/menu/(?P<slug>[a-zA-Z0-9-]+)', array(
+        'methods' => 'GET',
+        'callback' => 'get_menu_by_slug',
+        'permission_callback' => '__return_true', // Adjust permissions as needed
+    ));
+}
+add_action('rest_api_init', 'register_menu_endpoint');
+
+function get_menu_by_slug($data) {
+    $menu_slug = $data['slug'];
+    $menu = wp_get_nav_menu_items($menu_slug);
+
+    if (empty($menu)) {
+        return new WP_Error('no_menu', 'Invalid menu slug', array('status' => 404));
+    }
+    $menu_items = array();
+    foreach ($menu as $item) {
+        $menu_items[] = array(
+            'ID' => $item->ID,
+            'title' => $item->title,
+            'url' => $item->url,
+            'menu_order' => $item->menu_order,
+            'parent' => $item->menu_item_parent,
+        );
+    }
+
+    return rest_ensure_response($menu_items);
+}
