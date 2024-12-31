@@ -201,11 +201,16 @@ function register_my_menus() {
 add_action( 'init', 'register_my_menus' );
 
 
-// MENUS API ENDPOINTS
+// MENUS and FRONTPAGE API ENDPOINTS
 function register_menu_endpoint() {
     register_rest_route('custom/v1', '/menu/(?P<slug>[a-zA-Z0-9-]+)', array(
         'methods' => 'GET',
         'callback' => 'get_menu_by_slug',
+        'permission_callback' => '__return_true', // Adjust permissions as needed
+    ));
+    register_rest_route('custom/v1', '/frontpage', array(
+        'methods'  => 'GET',
+        'callback' => 'get_frontpage',
         'permission_callback' => '__return_true', // Adjust permissions as needed
     ));
 }
@@ -231,3 +236,52 @@ function get_menu_by_slug($data) {
 
     return rest_ensure_response($menu_items);
 }
+
+function get_frontpage( $object ) {
+
+  // Get WP options front page from settings > reading.
+  $frontpage_id = get_option('page_on_front');
+
+  // Handle if error.
+  if ( empty( $frontpage_id ) ) {
+    // return error
+    return 'error';
+  }
+
+  // Create request from pages endpoint by frontpage id.
+  $request  = new \WP_REST_Request( 'GET', '/wp/v2/pages/' . $frontpage_id );
+
+  // Parse request to get data.
+  $response = rest_do_request( $request );
+
+  // Handle if error.
+  if ( $response->is_error() ) {
+     return 'error';
+  }
+
+  return $response->get_data();
+}
+
+function create_ACF_meta_in_REST() {
+    $postypes_to_exclude = ['acf-field-group','acf-field'];
+    $extra_postypes_to_include = ["page"];
+    $post_types = array_diff(get_post_types(["_builtin" => false], 'names'),$postypes_to_exclude);
+
+    array_push($post_types, $extra_postypes_to_include);
+
+    foreach ($post_types as $post_type) {
+        register_rest_field( $post_type, 'ACF', [
+            'get_callback'    => 'expose_ACF_fields',
+            'schema'          => null,
+       ]
+     );
+    }
+
+}
+
+function expose_ACF_fields( $object ) {
+    $ID = $object['id'];
+    return get_fields($ID);
+}
+
+add_action( 'rest_api_init', 'create_ACF_meta_in_REST' );

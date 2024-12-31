@@ -1,9 +1,5 @@
 <?php
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 add_action('acf/render_field_settings/type=text', 'render_field_settings', 10, 3);
 add_action('acf/update_value', 'update_value', 10, 3);
 add_action('acf/load_value', 'load_value', 10, 3);
