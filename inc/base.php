@@ -264,7 +264,7 @@ function get_frontpage( $object ) {
 
 function create_ACF_meta_in_REST() {
     $postypes_to_exclude = ['acf-field-group','acf-field'];
-    $extra_postypes_to_include = ["page"];
+    $extra_postypes_to_include = ["page","works"];
     $post_types = array_diff(get_post_types(["_builtin" => false], 'names'),$postypes_to_exclude);
 
     array_push($post_types, $extra_postypes_to_include);
