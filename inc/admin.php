@@ -7,7 +7,7 @@
  * @return str The headless WordPress preview link.
  */
 function set_headless_preview_link($link) {
-  $frontend_url = get_field('frontend_url', 'option');
+  $frontend_url = H_FRONT_URL;
   return $frontend_url.'/'.get_post_field('post_name', get_the_ID()).'/';
 }
 

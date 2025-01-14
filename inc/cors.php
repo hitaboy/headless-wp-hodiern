@@ -12,7 +12,7 @@ if ($cors == true) {
     
     add_filter('rest_pre_serve_request', function ($value) {
       
-      $frontend_url = get_field('frontend_url', 'option');
+      $frontend_url = H_FRONT_URL;
       $allowed_origins = get_field('allowed_origins', 'option');
       $origin = get_http_origin();
       if (in_array($origin, array_column($allowed_origins, 'url'))) {

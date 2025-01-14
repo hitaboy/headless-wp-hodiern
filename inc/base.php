@@ -1,5 +1,10 @@
 <?php
 
+// Enable error reporting
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+
 // Disable automatic WordPress plugin updates
 add_filter( 'auto_update_plugin', '__return_false' );
 
@@ -50,7 +55,7 @@ function disable_wp_frontend() {
     }
 
     // Return a 404 for all other frontend requests
-    $frontend_url = get_field('frontend_url', 'option');
+    $frontend_url = H_FRONT_URL;
     wp_redirect($frontend_url, 301);
     exit;
 }
@@ -60,15 +65,14 @@ add_action('template_redirect', 'disable_wp_frontend');
 // Add button to Options page
 add_action('acf/render_field/name=deploy', function( $field ) {
     echo '<div style="display: flex; gap: 10px; align-items: center; margin-top: 15px;">';
-    echo '<button id="deploy" class="button button-primary">Create build</button>';
+    echo '<button id="deploy" class="button button-primary">Build website</button>';
     echo '<div id="deploy_message" style="color: #ccc; font-style: italic;"></div>';
+    echo '<div id="github_metrics_container" style="flex: auto;"></div>';
     echo '</div>';
-});
-
-add_action('acf/render_field/name=apply_build', function( $field ) {
-    echo '<div style="display: flex; gap: 10px; align-items: center; margin-top: 15px; flex-direction: column;  ">';
-    echo '<button id="apply_build" class="button button-primary">Apply build</button>';
-    echo '<div id="apply_build_message" style="color: #ccc; font-style: italic;"></div>';
+    echo '<div id="recent_build_zips_container" style="margin-top: 15px;">';
+    echo "<div class='acf-label'>";
+    echo "<label >Recent Build Zips</label></div>";
+    echo '<ul id="recent_build_zips_list"></ul>';
     echo '</div>';
 });
 
@@ -84,13 +88,31 @@ function enqueue_custom_admin_scripts($hook) {
 }
 add_action( 'admin_enqueue_scripts', 'enqueue_custom_admin_scripts' );
 
+function get_recent_build_zips() {
+    $attachments = get_posts( array(
+            'post_type' => 'attachment',
+            'posts_per_page' => -1,
+            'post_parent' => $post->ID,
+            'post_mime_type' => 'application/zip',
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+            'meta_query'     => array(
+                array(
+                    'key'     => '_wp_attached_file',
+                    'value'   => 'build_',
+                    'compare' => 'LIKE'
+                )
+            )
+        ) );
+
+    wp_reset_postdata();
+    return $attachments;
+}
+
 function deploy() {
     // Verify the nonce for security
-    check_ajax_referer('custom_ajax_nonce', 'nonce');
-    $github_user = get_field('github_user', 'option');
-    $github_repo = get_field('github_repo', 'option');
-    $github_access_token = get_field('github_access_token', 'option');
-	$url = 'https://api.github.com/repos/'.$github_user.'/'.$github_repo.'/dispatches';
+    check_ajax_referer('custom_ajax_nonce', 'nonce'); 
+	$url = 'https://api.github.com/repos/'.H_GITHUB_USER.'/'.H_GITHUB_REPO.'/dispatches';
 	$data = json_encode([
 		'event_type' => 'custom-event', // Matches the event in your workflow
 		'client_payload' => ['key' => 'value'] // Optional additional data
@@ -98,7 +120,7 @@ function deploy() {
 
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, [
-		'Authorization: token ' . $github_access_token,
+		'Authorization: token ' . H_GITHUB_AT,
 		'Accept: application/vnd.github.v3+json',
 		'User-Agent: PHP-Request'
 	]);
@@ -117,11 +139,58 @@ function deploy() {
 }
 add_action('wp_ajax_deploy', 'deploy');
 
+
+function fetch_github_metrics() {
+    // Verify the nonce for security
+    check_ajax_referer('custom_ajax_nonce', 'nonce');
+    $url = 'https://api.github.com/repos/' . H_GITHUB_USER . '/' . H_GITHUB_REPO . '/actions/workflows';
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: token ' . H_GITHUB_AT,
+        'Accept: application/vnd.github.v3+json',
+        'User-Agent: PHP-Request'
+    ]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    if ($response === false) {
+        wp_send_json_error('Failed to fetch metrics from GitHub.');
+    }
+    $workflows = json_decode($response, true)['workflows'];
+
+    // Fetch timing data for each workflow
+    foreach ($workflows as &$workflow) {
+        $timing_url = 'https://api.github.com/repos/' . H_GITHUB_USER . '/' . H_GITHUB_REPO . '/actions/workflows/' . $workflow['id'] . '/timing';
+        $ch = curl_init($timing_url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: token ' . H_GITHUB_AT,
+            'Accept: application/vnd.github.v3+json',
+            'User-Agent: PHP-Request'
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $timing_response = curl_exec($ch);
+        curl_close($ch);
+
+        if ($timing_response !== false) {
+            $workflow['timing'] = json_decode($timing_response, true);
+        } else {
+            $workflow['timing'] = 'Failed to fetch timing data';
+        }
+    }
+
+    wp_send_json_success($workflows);
+}
+add_action('wp_ajax_fetch_github_metrics', 'fetch_github_metrics');
+
 function apply_build() {
     // Verify the nonce for security
     check_ajax_referer('custom_ajax_nonce', 'nonce');
-    $build_file = get_attached_file( $_POST['build'] );
-    $destination = get_field('deploy_directory', 'option');
+    $build_url = urldecode($_POST['build']);
+    $build_file = get_attached_file_from_url($build_url);  
+    $destination = H_DEPLOY_DIRECTORY;
     $zip = new ZipArchive;
     $res = $zip->open($build_file);
     if ($res === TRUE) {
@@ -163,11 +232,29 @@ function apply_build() {
     } else {
         $response = array('message' => 'You have to choose a Build.');
     }
-    
-    $response = array('message' => $build_file);
     wp_send_json_success($response);
 }
 add_action('wp_ajax_apply_build', 'apply_build');
+
+function get_attached_file_from_url($url) {
+    // Get the upload directory paths
+    $upload_dir = wp_get_upload_dir();
+    $baseurl = $upload_dir['baseurl'];
+    $basedir = $upload_dir['basedir'];
+
+    // Replace the base URL with the base directory path
+    $file_path = str_replace($baseurl, $basedir, $url);
+
+    return $file_path;
+}
+
+function fetch_recent_build_zips() {
+    check_ajax_referer('custom_ajax_nonce', 'nonce');
+
+    $files = get_recent_build_zips();
+    wp_send_json_success($files);
+}
+add_action('wp_ajax_fetch_recent_build_zips', 'fetch_recent_build_zips');
 
 // Remove update metabox in Options page
 // add_action('admin_menu', 'maybe_find_and_remove_that_meta_box', 100, 0);
@@ -188,6 +275,7 @@ function add_that_remove_meta_box_action() {
 function remove_that_damn_meta_box() {
     remove_meta_box('submitdiv', 'acf_options_page', 'side');
 }
+
 
 // MENUS REGISTERING
 function register_my_menus() {

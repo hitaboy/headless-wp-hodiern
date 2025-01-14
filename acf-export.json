@@ -1,11 +1,11 @@
 [
     {
         "key": "group_676c643cc3fc3",
-        "title": "Options User",
+        "title": "Builds and backups",
         "fields": [
             {
                 "key": "field_676d8b126128b",
-                "label": "Deploy",
+                "label": "Build website",
                 "name": "",
                 "aria-label": "",
                 "type": "message",
@@ -23,19 +23,19 @@
             },
             {
                 "key": "field_676dde168edb9",
-                "label": "Build",
-                "name": "build",
+                "label": "Backups",
+                "name": "backup",
                 "aria-label": "",
                 "type": "file",
                 "instructions": "",
                 "required": 0,
                 "conditional_logic": 0,
                 "wrapper": {
-                    "width": "70",
+                    "width": "80",
                     "class": "",
                     "id": ""
                 },
-                "return_format": "array",
+                "return_format": "url",
                 "library": "all",
                 "min_size": "",
                 "max_size": "",
@@ -43,8 +43,8 @@
                 "allow_in_bindings": 0
             },
             {
-                "key": "field_676de06b97670",
-                "label": "",
+                "key": "field_6786918dad6d2",
+                "label": "Restore backup",
                 "name": "",
                 "aria-label": "",
                 "type": "message",
@@ -52,315 +52,75 @@
                 "required": 0,
                 "conditional_logic": 0,
                 "wrapper": {
-                    "width": "30",
+                    "width": "20",
                     "class": "",
                     "id": ""
                 },
                 "message": "",
                 "new_lines": "wpautop",
                 "esc_html": 0
-            }
-        ],
-        "location": [
-            [
-                {
-                    "param": "options_page",
-                    "operator": "==",
-                    "value": "options"
-                }
-            ]
-        ],
-        "menu_order": 0,
-        "position": "normal",
-        "style": "default",
-        "label_placement": "top",
-        "instruction_placement": "label",
-        "hide_on_screen": "",
-        "active": true,
-        "description": "",
-        "show_in_rest": 0
-    },
-    {
-        "key": "group_676d8f2494349",
-        "title": "Options Admin",
-        "fields": [
+            },
             {
-                "key": "field_6770200169c6b",
-                "label": "Show Admin Options",
-                "name": "show_admin_options",
+                "key": "field_676d8f24959de",
+                "label": "CORS",
+                "name": "cors",
                 "aria-label": "",
-                "type": "text",
+                "type": "true_false",
                 "instructions": "",
                 "required": 0,
                 "conditional_logic": 0,
                 "wrapper": {
-                    "width": "",
+                    "width": "20",
                     "class": "",
                     "id": ""
                 },
-                "default_value": "",
-                "_acf_encrypt": 0,
-                "maxlength": "",
+                "message": "",
+                "default_value": 0,
                 "allow_in_bindings": 0,
-                "placeholder": "",
-                "prepend": "",
-                "append": ""
+                "ui": 0,
+                "ui_on_text": "",
+                "ui_off_text": ""
             },
             {
-                "key": "field_6770204269c6c",
-                "label": "Admin Options",
-                "name": "admin_options",
+                "key": "field_676d8fd6c6ef6",
+                "label": "Allowed Origins",
+                "name": "allowed_origins",
                 "aria-label": "",
-                "type": "group",
+                "type": "repeater",
                 "instructions": "",
                 "required": 0,
-                "conditional_logic": [
-                    [
-                        {
-                            "field": "field_6770200169c6b",
-                            "operator": "==",
-                            "value": "Barcelona2009"
-                        }
-                    ]
-                ],
+                "conditional_logic": 0,
                 "wrapper": {
-                    "width": "",
+                    "width": "80",
                     "class": "",
                     "id": ""
                 },
-                "layout": "block",
+                "layout": "table",
+                "pagination": 0,
+                "min": 0,
+                "max": 0,
+                "collapsed": "",
+                "button_label": "Add Row",
+                "rows_per_page": 20,
                 "sub_fields": [
                     {
-                        "key": "field_676d8f24959d8",
-                        "label": "Frontend URL",
-                        "name": "frontend_url",
+                        "key": "field_676d8fe3c6ef7",
+                        "label": "url",
+                        "name": "url",
                         "aria-label": "",
                         "type": "url",
                         "instructions": "",
                         "required": 0,
                         "conditional_logic": 0,
                         "wrapper": {
-                            "width": "80",
-                            "class": "",
-                            "id": ""
-                        },
-                        "default_value": "http:\/\/api-rest.local",
-                        "allow_in_bindings": 0,
-                        "placeholder": ""
-                    },
-                    {
-                        "key": "field_676d8f24959de",
-                        "label": "CORS",
-                        "name": "cors",
-                        "aria-label": "",
-                        "type": "true_false",
-                        "instructions": "",
-                        "required": 0,
-                        "conditional_logic": 0,
-                        "wrapper": {
-                            "width": "20",
-                            "class": "",
-                            "id": ""
-                        },
-                        "message": "",
-                        "default_value": 0,
-                        "allow_in_bindings": 0,
-                        "ui": 0,
-                        "ui_on_text": "",
-                        "ui_off_text": ""
-                    },
-                    {
-                        "key": "field_676f3814cb2ab",
-                        "label": "Deploy directory",
-                        "name": "deploy_directory",
-                        "aria-label": "",
-                        "type": "text",
-                        "instructions": "",
-                        "required": 0,
-                        "conditional_logic": 0,
-                        "wrapper": {
                             "width": "",
                             "class": "",
                             "id": ""
                         },
                         "default_value": "",
-                        "_acf_encrypt": 0,
-                        "maxlength": "",
-                        "allow_in_bindings": 0,
-                        "placeholder": "",
-                        "prepend": "",
-                        "append": ""
-                    },
-                    {
-                        "key": "field_676d8fd6c6ef6",
-                        "label": "Allowed Origins",
-                        "name": "allowed_origins",
-                        "aria-label": "",
-                        "type": "repeater",
-                        "instructions": "",
-                        "required": 0,
-                        "conditional_logic": 0,
-                        "wrapper": {
-                            "width": "",
-                            "class": "",
-                            "id": ""
-                        },
-                        "layout": "table",
-                        "pagination": 0,
-                        "min": 0,
-                        "max": 0,
-                        "collapsed": "",
-                        "button_label": "Add Row",
-                        "rows_per_page": 20,
-                        "sub_fields": [
-                            {
-                                "key": "field_676d8fe3c6ef7",
-                                "label": "url",
-                                "name": "url",
-                                "aria-label": "",
-                                "type": "url",
-                                "instructions": "",
-                                "required": 0,
-                                "conditional_logic": 0,
-                                "wrapper": {
-                                    "width": "",
-                                    "class": "",
-                                    "id": ""
-                                },
-                                "default_value": "",
-                                "allow_in_bindings": 1,
-                                "placeholder": "",
-                                "parent_repeater": "field_676d8fd6c6ef6"
-                            }
-                        ]
-                    },
-                    {
-                        "key": "field_676d8f24959e1",
-                        "label": "GITHUB Access Token",
-                        "name": "github_access_token",
-                        "aria-label": "",
-                        "type": "text",
-                        "instructions": "",
-                        "required": 0,
-                        "conditional_logic": 0,
-                        "wrapper": {
-                            "width": "",
-                            "class": "",
-                            "id": ""
-                        },
-                        "default_value": "",
-                        "_acf_encrypt": 1,
-                        "maxlength": "",
                         "allow_in_bindings": 1,
                         "placeholder": "",
-                        "prepend": "",
-                        "append": ""
-                    },
-                    {
-                        "key": "field_676d8f24959e4",
-                        "label": "GITHUB User",
-                        "name": "github_user",
-                        "aria-label": "",
-                        "type": "text",
-                        "instructions": "",
-                        "required": 0,
-                        "conditional_logic": 0,
-                        "wrapper": {
-                            "width": "",
-                            "class": "",
-                            "id": ""
-                        },
-                        "default_value": "",
-                        "maxlength": "",
-                        "allow_in_bindings": 1,
-                        "placeholder": "",
-                        "prepend": "",
-                        "append": ""
-                    },
-                    {
-                        "key": "field_676d8f24959e6",
-                        "label": "GITHUB Repo",
-                        "name": "github_repo",
-                        "aria-label": "",
-                        "type": "text",
-                        "instructions": "",
-                        "required": 0,
-                        "conditional_logic": 0,
-                        "wrapper": {
-                            "width": "",
-                            "class": "",
-                            "id": ""
-                        },
-                        "default_value": "",
-                        "maxlength": "",
-                        "allow_in_bindings": 1,
-                        "placeholder": "",
-                        "prepend": "",
-                        "append": ""
-                    },
-                    {
-                        "key": "field_676d8f24959e9",
-                        "label": "Ciphering",
-                        "name": "ciphering",
-                        "aria-label": "",
-                        "type": "text",
-                        "instructions": "",
-                        "required": 0,
-                        "conditional_logic": 0,
-                        "wrapper": {
-                            "width": "",
-                            "class": "",
-                            "id": ""
-                        },
-                        "default_value": "AES-128-CTR",
-                        "maxlength": "",
-                        "allow_in_bindings": 0,
-                        "placeholder": "",
-                        "prepend": "",
-                        "append": ""
-                    },
-                    {
-                        "key": "field_676d8f24959ec",
-                        "label": "Encryption Initial Vector",
-                        "name": "encryption_iv",
-                        "aria-label": "",
-                        "type": "text",
-                        "instructions": "",
-                        "required": 0,
-                        "conditional_logic": 0,
-                        "wrapper": {
-                            "width": "",
-                            "class": "",
-                            "id": ""
-                        },
-                        "default_value": 1234567891011121,
-                        "maxlength": "",
-                        "allow_in_bindings": 0,
-                        "placeholder": "",
-                        "prepend": "",
-                        "append": ""
-                    },
-                    {
-                        "key": "field_676d8f24959ef",
-                        "label": "Encryption key",
-                        "name": "encryption_key",
-                        "aria-label": "",
-                        "type": "text",
-                        "instructions": "",
-                        "required": 0,
-                        "conditional_logic": 0,
-                        "wrapper": {
-                            "width": "",
-                            "class": "",
-                            "id": ""
-                        },
-                        "default_value": "kliqh86713gdhwkdhwef",
-                        "_acf_encrypt": 0,
-                        "maxlength": "",
-                        "allow_in_bindings": 0,
-                        "placeholder": "",
-                        "prepend": "",
-                        "append": ""
+                        "parent_repeater": "field_676d8fd6c6ef6"
                     }
                 ]
             }
@@ -374,7 +134,7 @@
                 }
             ]
         ],
-        "menu_order": 1,
+        "menu_order": 0,
         "position": "normal",
         "style": "default",
         "label_placement": "top",
@@ -392,7 +152,7 @@
         "page_title": "Options",
         "menu_slug": "options",
         "parent_slug": "none",
-        "advanced_configuration": 0,
+        "advanced_configuration": 1,
         "icon_url": "",
         "menu_title": "",
         "position": "",
@@ -407,6 +167,6 @@
         "capability": "edit_posts",
         "data_storage": "options",
         "post_id": "",
-        "autoload": 0
+        "autoload": 1
     }
 ]

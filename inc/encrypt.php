@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 add_action('acf/render_field_settings/type=text', 'render_field_settings', 10, 3);
 add_action('acf/update_value', 'update_value', 10, 3);
 add_action('acf/load_value', 'load_value', 10, 3);
@@ -19,9 +23,9 @@ function update_value($value, $post_id, $field)
     {
         if ( isset($field['_acf_encrypt']) && $field['_acf_encrypt'] )
         {
-            $ciphering = get_field('ciphering', 'option');
-            $encryption_key = get_field('encryption_key', 'option');
-            $encryption_iv = get_field('encryption_iv', 'option');
+            $ciphering = H_CIPHERING;
+            $encryption_key = H_ENC_KEY;
+            $encryption_iv = H_ENC_IV;
             if(!empty($ciphering)){
                 $iv_length = openssl_cipher_iv_length($ciphering);
                 $encryption = openssl_encrypt($value, $ciphering, $encryption_key, 0, $encryption_iv);
@@ -36,9 +40,9 @@ function load_value($value, $post_id, $field)
     {
         if ( isset($field['_acf_encrypt']) && $field['_acf_encrypt'] )
         {
-            $ciphering = get_field('ciphering', 'option');
-            $encryption_key = get_field('encryption_key', 'option');
-            $encryption_iv = get_field('encryption_iv', 'option');
+            $ciphering = H_CIPHERING;
+            $encryption_key = H_ENC_KEY;
+            $encryption_iv = H_ENC_IV;
             if(!empty($ciphering)){
                 $decryption=openssl_decrypt($value, $ciphering, $encryption_key, 0, $encryption_iv);
                 return $decryption;
